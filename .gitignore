@@ -174,3 +174,6 @@ install/
 # Temporary files
 tmp/
 temp/
+
+# Validation
+narf-original/

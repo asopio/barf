@@ -96,6 +96,36 @@ python test.py
 python -c "import ROOT; import narf; from narf import histutils"
 ```
 
+### Validate Against Original NARF
+
+BARF provides pixi tasks to validate against the original narf package:
+
+```bash
+# Using pixi (recommended for validation)
+pixi install --environment narf-validation
+
+# Clone and setup original narf
+pixi run setup-narf
+
+# Run tests with original narf
+pixi run test-narf
+
+# Run tests with BARF
+pixi run test-barf
+
+# Run comparison between both
+pixi run compare
+
+# Or validate both in sequence
+pixi run validate
+```
+
+These tasks allow you to:
+- Clone the original narf repository automatically
+- Run the same tests with both narf and BARF
+- Compare results to ensure compatibility
+- Validate that BARF maintains the same functionality
+
 ### Code Style
 
 BARF follows standard C++ and Python conventions:

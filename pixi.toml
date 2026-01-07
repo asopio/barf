@@ -22,15 +22,65 @@ pytest = "*"
 black = "*"
 isort = "*"
 
+[feature.narf-validation.dependencies]
+# Additional dependencies for validating against original narf
+lz4 = "*"
+numba = "*"
+
 [tasks]
-# Build the C++ library
+# Build the BARF C++ library
 build = "cmake -B build -DCMAKE_INSTALL_PREFIX=$PREFIX -DBARF_BUILD_PYTHON=ON && cmake --build build"
-# Install the package
+# Install the BARF package
 install = "cmake --build build --target install"
-# Run tests
+# Run tests with BARF
 test = "python test.py"
 # Clean build artifacts
 clean = "rm -rf build"
 
+# Tasks for validating against original narf
+[tasks.setup-narf]
+cmd = """
+if [ ! -d "narf-original" ]; then
+  git clone https://github.com/bendavid/narf.git narf-original
+fi
+"""
+description = "Clone the original narf repository for validation"
+
+[tasks.test-narf]
+cmd = """
+cd narf-original && \
+export NARF_BASE=$(pwd) && \
+export PYTHONPATH="${NARF_BASE}:$PYTHONPATH" && \
+export EXTRA_CLING_ARGS="-O3" && \
+python ../test.py
+"""
+depends-on = ["setup-narf"]
+description = "Run tests with original narf package"
+
+[tasks.test-barf]
+cmd = """
+export PYTHONPATH="${PWD}:$PYTHONPATH" && \
+python test.py
+"""
+depends-on = ["build", "install"]
+description = "Run tests with BARF package"
+
+[tasks.validate]
+depends-on = ["test-narf", "test-barf"]
+description = "Validate BARF against original narf by running both test suites"
+
+[tasks.compare]
+cmd = """
+echo "=== Testing with original NARF ===" && \
+pixi run test-narf && \
+echo "" && \
+echo "=== Testing with BARF ===" && \
+pixi run test-barf && \
+echo "" && \
+echo "✅ Both NARF and BARF tests completed successfully!"
+"""
+description = "Run comparison tests between original narf and BARF"
+
 [environments]
 default = ["dev"]
+narf-validation = ["dev", "narf-validation"]

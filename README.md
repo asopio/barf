@@ -115,6 +115,23 @@ df = ROOT.RDataFrame("tree", "data.root")
 # ... your analysis code ...
 ```
 
+## Validation
+
+BARF can be validated against the original narf package using pixi:
+
+```bash
+# Install with validation environment
+pixi install --environment narf-validation
+
+# Run validation tests
+pixi run validate
+
+# Or compare side-by-side
+pixi run compare
+```
+
+This clones the original narf repository and runs the same tests with both packages to ensure compatibility.
+
 ## License
 
 LGPL-2.1-or-later (same as ROOT)

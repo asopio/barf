@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "barf"
+version = "0.1.0"
+description = "BARF: Boost And ROOT Framework - A standalone package extending ROOT RDataFrames"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "LGPL-2.1-or-later"}
+authors = [
+    {name = "Ben David"},
+]
+keywords = ["ROOT", "RDataFrame", "HEP", "physics", "histogram", "boost-histogram"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+dependencies = [
+    "numpy>=1.20",
+    "boost-histogram>=1.0",
+    "hist>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "isort",
+]
+
+[project.urls]
+Homepage = "https://github.com/asopio/barf"
+Repository = "https://github.com/asopio/barf"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["narf*"]
+
+[tool.setuptools.package-data]
+narf = ["include/*.hpp", "include/*.h"]
+
+[tool.black]
+line-length = 120
+target-version = ["py38", "py39", "py310", "py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 120

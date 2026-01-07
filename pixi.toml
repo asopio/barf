@@ -1,0 +1,36 @@
+[project]
+name = "barf"
+version = "0.1.0"
+description = "BARF: Boost And ROOT Framework - A standalone package extending ROOT RDataFrames"
+authors = ["Ben David"]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[dependencies]
+python = ">=3.8"
+root = ">=6.24"
+tbb = "*"
+eigen = "*"
+boost-histogram = ">=1.0"
+hist = ">=2.0"
+numpy = ">=1.20"
+cmake = ">=3.16"
+cxx-compiler = "*"
+
+[feature.dev.dependencies]
+pytest = "*"
+black = "*"
+isort = "*"
+
+[tasks]
+# Build the C++ library
+build = "cmake -B build -DCMAKE_INSTALL_PREFIX=$PREFIX -DBARF_BUILD_PYTHON=ON && cmake --build build"
+# Install the package
+install = "cmake --build build --target install"
+# Run tests
+test = "python test.py"
+# Clean build artifacts
+clean = "rm -rf build"
+
+[environments]
+default = ["dev"]

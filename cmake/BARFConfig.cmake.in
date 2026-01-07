@@ -1,0 +1,26 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Find required dependencies
+find_dependency(ROOT REQUIRED COMPONENTS Core RIO Tree Hist TreePlayer ROOTDataFrame)
+find_dependency(TBB REQUIRED)
+find_dependency(Eigen3 REQUIRED)
+
+# Find Boost.Histogram headers
+find_path(BOOST_HISTOGRAM_INCLUDE_DIR
+    NAMES boost/histogram.hpp
+    PATHS 
+        /usr/include
+        /usr/local/include
+        $ENV{CONDA_PREFIX}/include
+        $ENV{PREFIX}/include
+)
+
+if(NOT BOOST_HISTOGRAM_INCLUDE_DIR)
+    message(FATAL_ERROR "Boost.Histogram headers not found")
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/BARFTargets.cmake")
+
+check_required_components(BARF)

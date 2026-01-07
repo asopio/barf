@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+include INSTALL.md
+include setup.sh
+include pyproject.toml
+include CMakeLists.txt
+recursive-include cmake *.cmake.in
+recursive-include narf/include *.hpp *.h
+recursive-include conda *.yaml
+include pixi.toml

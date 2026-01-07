@@ -1,0 +1,66 @@
+{% set name = "barf" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  skip: true  # [py<38]
+  script: 
+    - mkdir build
+    - cd build
+    - cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBARF_BUILD_PYTHON=ON ..
+    - cmake --build . --target install
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.16
+    - make  # [unix]
+  host:
+    - python
+    - pip
+    - setuptools >=61.0
+    - wheel
+    - root >=6.24
+    - tbb-devel
+    - eigen
+    - boost-histogram >=1.0
+    - numpy >=1.20
+  run:
+    - python
+    - root >=6.24
+    - tbb
+    - eigen
+    - boost-histogram >=1.0
+    - hist >=2.0
+    - numpy >=1.20
+
+test:
+  imports:
+    - narf
+    - narf.histutils
+    - narf.clingutils
+  commands:
+    - python -c "import narf; import ROOT"
+
+about:
+  home: https://github.com/asopio/barf
+  license: LGPL-2.1-or-later
+  license_file: LICENSE
+  summary: BARF - Boost And ROOT Framework for parallel analyses with RDataFrames
+  description: |
+    BARF is a standalone package that extends the functionality of ROOT RDataFrames.
+    It provides utilities for working with boost-histogram and ROOT together, enabling
+    efficient parallel data analysis workflows.
+  doc_url: https://github.com/asopio/barf
+  dev_url: https://github.com/asopio/barf
+
+extra:
+  recipe-maintainers:
+    - bendavid

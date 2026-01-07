@@ -1,0 +1,122 @@
+name: Build and Test BARF
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-with-conda:
+    name: Build with Conda (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.9", "3.10", "3.11"]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
+        channels: conda-forge
+        channel-priority: strict
+    
+    - name: Install dependencies
+      shell: bash -l {0}
+      run: |
+        conda install -y root tbb tbb-devel eigen boost-histogram hist numpy cmake cxx-compiler
+    
+    - name: Build BARF with CMake
+      shell: bash -l {0}
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DBARF_BUILD_PYTHON=ON ..
+        cmake --build . --parallel 2
+        cmake --build . --target install
+    
+    - name: Test Python import
+      shell: bash -l {0}
+      run: |
+        python -c "import ROOT; print(f'ROOT version: {ROOT.gROOT.GetVersion()}')"
+        python -c "import narf; print('BARF imported successfully')"
+    
+    - name: Run example
+      shell: bash -l {0}
+      run: |
+        source setup.sh
+        # test.py requires data files that may not be available in CI
+        # python test.py
+
+  build-python-package:
+    name: Build Python Package
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine check-manifest
+    
+    - name: Check manifest
+      run: |
+        check-manifest
+    
+    - name: Build package
+      run: |
+        python -m build
+    
+    - name: Check package
+      run: |
+        twine check dist/*
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package
+        path: dist/*
+
+  verify-dependencies:
+    name: Verify Dependencies Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Check for ROOT headers in BARF code
+      run: |
+        echo "Checking for ROOT dependencies in header files..."
+        grep -r "ROOT/" narf/include/*.hpp || echo "No ROOT headers found"
+        
+        echo "Checking for TBB dependencies..."
+        grep -r "tbb" narf/include/*.hpp || echo "No TBB headers found"
+        
+        echo "Checking for Boost dependencies..."
+        grep -r "boost/" narf/include/*.hpp || echo "No Boost headers found"
+        
+        echo "Checking for Eigen dependencies..."
+        grep -r "eigen3/" narf/include/*.hpp || echo "No Eigen headers found"
+    
+    - name: Verify header-only design
+      run: |
+        echo "Verifying BARF is header-only..."
+        if [ -n "$(find narf -name '*.cpp' -o -name '*.cc' -o -name '*.cxx')" ]; then
+          echo "ERROR: Found C++ implementation files - BARF should be header-only!"
+          exit 1
+        else
+          echo "SUCCESS: BARF is header-only (no .cpp files found)"
+        fi

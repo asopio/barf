@@ -1,3 +1,8 @@
+# barf 
+
+but another rdf framework
+
+--- 
 # narf
 narf is not an rdf framework
 

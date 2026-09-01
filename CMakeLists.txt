@@ -15,19 +15,16 @@ find_package(ROOT REQUIRED COMPONENTS Core RIO Tree Hist TreePlayer ROOTDataFram
 find_package(TBB REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-# Boost.Histogram is header-only but we need to find the include path
-find_path(BOOST_HISTOGRAM_INCLUDE_DIR
-    NAMES boost/histogram.hpp
-    PATHS 
-        /usr/include
-        /usr/local/include
-        $ENV{CONDA_PREFIX}/include
-        $ENV{PREFIX}/include
-    DOC "Path to Boost.Histogram headers"
-)
+# Boost headers are vendored from the full Boost source tree
+set(BOOST_HISTOGRAM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/histogram/include")
+set(BOOST_CORE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/core/include")
+set(BOOST_CONFIG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/config/include")
+set(BOOST_MP11_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/mp11/include")
+set(BOOST_THROW_EXCEPTION_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/throw_exception/include")
+set(BOOST_VARIANT2_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/variant2/include")
 
-if(NOT BOOST_HISTOGRAM_INCLUDE_DIR)
-    message(FATAL_ERROR "Boost.Histogram headers not found. Please install boost-histogram.")
+if(NOT EXISTS "${BOOST_HISTOGRAM_INCLUDE_DIR}/boost/histogram.hpp")
+    message(FATAL_ERROR "Boost.Histogram headers not found in boost/libs/histogram/include.")
 endif()
 
 # Create BARF library as INTERFACE (header-only)
@@ -39,6 +36,11 @@ target_include_directories(barf INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/narf/include>
     $<INSTALL_INTERFACE:include/barf>
     ${BOOST_HISTOGRAM_INCLUDE_DIR}
+    ${BOOST_CORE_INCLUDE_DIR}
+    ${BOOST_CONFIG_INCLUDE_DIR}
+    ${BOOST_MP11_INCLUDE_DIR}
+    ${BOOST_THROW_EXCEPTION_INCLUDE_DIR}
+    ${BOOST_VARIANT2_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
 )
 

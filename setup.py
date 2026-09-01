@@ -1,9 +1,23 @@
-from setuptools import setup, find_packages
 from pathlib import Path
+from setuptools import setup, find_packages
 
-# Read the README file
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
+
+
+def _boost_package_data():
+    boost_root = this_directory / "narf" / "boost"
+    patterns = []
+    if not boost_root.exists():
+        return patterns
+
+    for path in boost_root.rglob("*.hpp"):
+        patterns.append(str(path.relative_to(this_directory / "narf")))
+    for path in boost_root.rglob("*.h"):
+        patterns.append(str(path.relative_to(this_directory / "narf")))
+
+    return sorted(set(patterns))
+
 
 setup(
     name="barf",
@@ -16,17 +30,14 @@ setup(
     packages=find_packages(),
     python_requires=">=3.8",
     install_requires=[
-        # Python dependencies only - C++ deps are handled by conda/system
         "numpy>=1.20",
         "boost-histogram>=1.0",
         "hist>=2.0",
+        "h5py",
+        "hdf5plugin",
     ],
     extras_require={
-        "dev": [
-            "pytest",
-            "black",
-            "isort",
-        ],
+        "dev": ["pytest", "black", "isort"],
     },
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -41,7 +52,7 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
     ],
     package_data={
-        "narf": ["include/*.hpp", "include/*.h"],
+        "narf": ["include/*.hpp", "include/*.h", *_boost_package_data()],
     },
     include_package_data=True,
 )

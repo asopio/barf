@@ -30,6 +30,8 @@ dependencies = [
     "numpy>=1.20",
     "boost-histogram>=1.0",
     "hist>=2.0",
+    "h5py",
+    "hdf5plugin",
 ]
 
 [project.optional-dependencies]
@@ -48,7 +50,7 @@ where = ["."]
 include = ["narf*"]
 
 [tool.setuptools.package-data]
-narf = ["include/*.hpp", "include/*.h"]
+narf = ["include/*.hpp", "include/*.h", "boost/libs/*/include/**/*.hpp", "boost/libs/*/include/**/*.h"]
 
 [tool.black]
 line-length = 120

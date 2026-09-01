@@ -6,5 +6,25 @@ include pyproject.toml
 include CMakeLists.txt
 recursive-include cmake *.cmake.in
 recursive-include narf/include *.hpp *.h
+recursive-include boost/libs/histogram/include *.hpp *.h
+recursive-include boost/libs/core/include *.hpp *.h
+recursive-include boost/libs/config/include *.hpp *.h
+recursive-include boost/libs/mp11/include *.hpp *.h
+recursive-include boost/libs/throw_exception/include *.hpp *.h
+recursive-include boost/libs/variant2/include *.hpp *.h
+recursive-include boost/libs/assert/include *.hpp *.h
+recursive-include boost/libs/type_traits/include *.hpp *.h
+recursive-include boost/libs/static_assert/include *.hpp *.h
+recursive-include boost/libs/predef/include *.hpp *.h
+recursive-include boost/libs/preprocessor/include *.hpp *.h
+recursive-include boost/libs/move/include *.hpp *.h
+recursive-include boost/libs/mpl/include *.hpp *.h
+recursive-include boost/libs/utility/include *.hpp *.h
+recursive-include boost/libs/serialization/include *.hpp *.h
+recursive-include boost/libs/integer/include *.hpp *.h
+recursive-include boost/libs/array/include *.hpp *.h
+recursive-include boost/libs/concept_check/include *.hpp *.h
+recursive-include boost/libs/iterator/include *.hpp *.h
+recursive-include boost/libs/detail/include *.hpp *.h
 recursive-include conda *.yaml
 include pixi.toml
